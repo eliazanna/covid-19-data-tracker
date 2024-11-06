@@ -21,6 +21,7 @@ filtered=europa[europa['new_cases']!=0]
 # carico il file che mi permette di fare il grafico sulla cartina 
 shapefile_path = "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/geometrie/mappa europa/ne_110m_admin_0_countries.shp"
 world = gpd.read_file(shapefile_path)
+world['SOVEREIGNT'] = world['SOVEREIGNT'].replace("Republic of Serbia", "Serbia") #different name didn't show Serbia before
 
 #creo un dataframe/voc con le info per il primo grafico (stato, total_death_per_million)
 dpm_country = filtered.groupby('location')['total_deaths_per_million'].max().reset_index()
@@ -34,11 +35,15 @@ europe_map_valid = europe_map[europe_map['total_deaths_per_million'] > 0]
 
 # Creo PLOT 1
 fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-europe_map_valid.plot(column='total_deaths_per_million', cmap='Greys', linewidth=0.8, ax=ax, edgecolor='0.8', legend=True, aspect='equal')
+europe_map_valid.plot(column='total_deaths_per_million', cmap='Greys', linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
 
 ax.set_xlim([-10, 35])  # Limiti di longitudine
 ax.set_ylim([35, 72])   # Limiti di latitudine
 plt.title('Total Deaths per Million in Europe (COVID-19)', fontsize=15)
+# Rimuove i valori sugli assi x e y
+ax.set_xticks([])
+ax.set_yticks([])
+
 plt.show()
 
 
@@ -54,11 +59,16 @@ europe_map_cases_valid = europe_map_cases[europe_map_cases['total_cases_per_mill
 
 #CREO PLOT 2
 fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-europe_map_cases_valid.plot(column='total_cases_per_million', cmap='OrRd', linewidth=0.8, ax=ax, edgecolor='0.8', legend=True, aspect='equal')
+europe_map_cases_valid.plot(column='total_cases_per_million', cmap='OrRd', linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
 
 ax.set_xlim([-10, 35])  # Limiti di longitudine
 ax.set_ylim([35, 72])   # Limiti di latitudine
 plt.title('Total Cases per Million in Europe (COVID-19)', fontsize=15)
+
+# Rimuove i valori sugli assi x e y
+ax.set_xticks([])
+ax.set_yticks([])
+
 plt.show()
 
 
@@ -69,12 +79,19 @@ hp_country = hp_country.rename(columns={'location': 'SOVEREIGNT'})
 
 europe_map_hospitals = world.merge(hp_country, on='SOVEREIGNT', how='inner')
 europe_map_hospitals_valid = europe_map_hospitals[europe_map_hospitals['hosp_patients_per_million'] > 0]
+europe_map_hospitals_null = europe_map_hospitals[pd.isna(europe_map_hospitals['hosp_patients_per_million'])]
 
 #CREO PLOT 3
 fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-europe_map_hospitals_valid.plot(column='hosp_patients_per_million', cmap='Blues', linewidth=0.8, ax=ax, edgecolor='0.8', legend=True, aspect='equal')
+europe_map_hospitals_valid.plot(column='hosp_patients_per_million', cmap='Blues', linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
+europe_map_hospitals_null.plot(ax=ax, color='none', edgecolor='#D3D3D3', hatch='//', linewidth=0.6, aspect='equal')
+
 
 ax.set_xlim([-10, 35])  # Limiti di longitudine
 ax.set_ylim([35, 72])   # Limiti di latitudine
+# Rimuove i valori sugli assi x e y
+ax.set_xticks([])
+ax.set_yticks([])
+
 plt.title('Hospital Patients per Million in Europe (COVID-19)', fontsize=15)
 plt.show()
