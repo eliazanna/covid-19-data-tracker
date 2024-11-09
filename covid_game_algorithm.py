@@ -19,66 +19,66 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
     if len(sintomi) == 0:
         sintomi_moltiplicatore = 0.1
     elif len(sintomi) <= 2:
-        sintomi_moltiplicatore = 1.1
+        sintomi_moltiplicatore = 1
     else:
         sintomi_moltiplicatore = 1.2
 
     # 2) Moltiplicatore in base alla durata dei sintomi
     if durata_sintomi < 3:
-        durata_moltiplicatore = 0.7  # Sintomi di breve durata, meno probabile COVID
+        durata_moltiplicatore = 0.6  # Sintomi di breve durata, meno probabile COVID
     elif durata_sintomi <= 7:
-        durata_moltiplicatore = 1.5  # Sintomi di durata moderata, probabilità standard
+        durata_moltiplicatore = 1.4  # Sintomi di durata moderata, probabilità standard
+    elif durata_sintomi <= 10:
+        durata_moltiplicatore = 1.6
     else:
-        durata_moltiplicatore = 2  # Sintomi di lunga durata, più probabile COVID
+        durata_moltiplicatore = 2 # Sintomi di lunga durata, più probabile COVID
 
     # 3) Moltiplicatore in base alla gravità dei sintomi
-    if gravita_sintomi == "lieve":
-        gravita_moltiplicatore = 0.7  # Sintomi lievi, meno probabile COVID
-    elif gravita_sintomi == "moderata":
+    if gravita_sintomi == "Lieve":
+        gravita_moltiplicatore = 0.8  # Sintomi lievi, meno probabile COVID
+    elif gravita_sintomi == "Moderata":
         gravita_moltiplicatore = 1.0  # Sintomi moderati, probabilità standard
     else:
-        gravita_moltiplicatore = 1.2  # Sintomi severi, più probabile COVID
+        gravita_moltiplicatore = 1.3  # Sintomi severi, più probabile COVID
 
     # 4. Moltiplicatore in base ai contatti con positivi confermati
     if contatto_con_positivi:
-        contatto_moltiplicatore = 1.5 
+        contatto_moltiplicatore = 2 
     else:
-        contatto_moltiplicatore=1
+        contatto_moltiplicatore=0.9
 
-    if nuovi_casi > media_nuovi_casi * 3.0:
-        casi_moltiplicatore = 1.8  # Molto più alti della media
-    elif nuovi_casi > media_nuovi_casi * 2.0:
-        casi_moltiplicatore = 1.5  # Molto alti rispetto alla media
+    if nuovi_casi > media_nuovi_casi * 5.0:
+        casi_moltiplicatore = 1.6  # Molto più alti della media
+    elif nuovi_casi > media_nuovi_casi * 3.0:
+        casi_moltiplicatore = 1.35  # Molto alti rispetto alla media
     elif nuovi_casi > media_nuovi_casi * 1.5:
-        casi_moltiplicatore = 1.3  # Alti rispetto alla media
-    elif nuovi_casi > media_nuovi_casi * 1.2:
-        casi_moltiplicatore = 1.1  # Moderatamente alti
+        casi_moltiplicatore = 1.1  # Alti rispetto alla media
     elif nuovi_casi >= media_nuovi_casi * 0.8:
         casi_moltiplicatore = 1.0  # Vicini alla media
     elif nuovi_casi >= media_nuovi_casi * 0.5:
-        casi_moltiplicatore = 0.7  # Moderatamente bassi
+        casi_moltiplicatore = 0.8  # Moderatamente bassi
     elif nuovi_casi >= media_nuovi_casi * 0.3:
-        casi_moltiplicatore = 0.6  # Bassi rispetto alla media
+        casi_moltiplicatore = 0.7  # Bassi rispetto alla media
     else:
-        casi_moltiplicatore = 0.4  # Molto bassi rispetto alla media
+        casi_moltiplicatore = 0.5  # Molto bassi rispetto alla media
 
     #5) Moltiplicatore in base al rapporto positivi/tamponi
     rapporto_positivi = tamponi_positivi_settimanali / tamponi_settimanali
 
     if rapporto_positivi < media_rapporto_positivi * 0.3:
-        tamponi_moltiplicatore = 0.5  # Molto inferiore alla media
+        tamponi_moltiplicatore = 0.7  # Molto inferiore alla media
     elif rapporto_positivi < media_rapporto_positivi * 0.6:
-        tamponi_moltiplicatore = 0.6  # Moderatamente inferiore alla media
+        tamponi_moltiplicatore = 0.8  # Moderatamente inferiore alla media
     elif rapporto_positivi < media_rapporto_positivi * 0.9:
-        tamponi_moltiplicatore = 0.8  # Leggermente inferiore alla media
+        tamponi_moltiplicatore = 0.9  # Leggermente inferiore alla media
     elif rapporto_positivi <= media_rapporto_positivi * 1.1:
         tamponi_moltiplicatore = 1.0  # Vicino alla media
     elif rapporto_positivi <= media_rapporto_positivi * 1.3:
-        tamponi_moltiplicatore = 1.2  # Leggermente superiore alla media
+        tamponi_moltiplicatore = 1.1  # Leggermente superiore alla media
     elif rapporto_positivi <= media_rapporto_positivi * 1.6:
-        tamponi_moltiplicatore = 1.3  # Moderatamente superiore alla media
+        tamponi_moltiplicatore = 1.2  # Moderatamente superiore alla media
     else:
-        tamponi_moltiplicatore = 1.5  # Molto superiore alla media
+        tamponi_moltiplicatore = 1.3  # Molto superiore alla media
 
 
     #Calcolo della probabilità finale = prodotto dei moltiplicatori
@@ -93,18 +93,26 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
     "tamponi_moltiplicatore": tamponi_moltiplicatore
     }
 
-    #determino categoria di probabilità
-    #valori attualmente un po random, sono fa fixare
-    #sarebbe carino standardizzare i valori per avere un numero in percentuale
-    if probabilita > 500:
+    #standardizzo per avere la probabilità massima, definita in modo che
+    #se tutti i moltiplicatori sono massimi, non ho comunque il 100% di chance che sia covid
+
+    moltiplicatori_max = 14.0  #leggermente piu alto del vero, in modo che 100% non esca mai
+    moltiplicatori_min = 0.014
+    prob_perc_standardizzata = ((probabilita - moltiplicatori_min) / (moltiplicatori_max - moltiplicatori_min)) 
+
+
+    if prob_perc_standardizzata > 40:
         probabilita_finale = "Molto Alta"
-    elif probabilita > 300:
+    elif prob_perc_standardizzata > 25:
         probabilita_finale = "Alta"
-    elif probabilita > 200:
+    elif prob_perc_standardizzata > 15:
         probabilita_finale = "Media"
-    elif probabilita > 100:
+    elif prob_perc_standardizzata> 5:
         probabilita_finale = "Bassa"
     else:
         probabilita_finale = "Molto Bassa"
-    
-    return probabilita_finale, dict_moltiplicatori
+
+
+    return probabilita_finale, dict_moltiplicatori, round(prob_perc_standardizzata, 1)
+
+
