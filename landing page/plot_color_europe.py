@@ -17,95 +17,64 @@ europa = europa[['date', 'location', 'total_cases', 'new_cases', 'total_deaths',
 #elimino le righe con new_cases = '0'
 filtered=europa[europa['new_cases']!=0]
 
-
 # carico il file che mi permette di fare il grafico sulla cartina 
 shapefile_path = "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/geometrie/mappa europa/ne_110m_admin_0_countries.shp"
 world = gpd.read_file(shapefile_path)
 world['SOVEREIGNT'] = world['SOVEREIGNT'].replace("Republic of Serbia", "Serbia") #different name didn't show Serbia before
 
-#creo un dataframe/voc con le info per il primo grafico (stato, total_death_per_million)
-dpm_country = filtered.groupby('location')['total_deaths_per_million'].max().reset_index()
-dpm_country = dpm_country.rename(columns={'location': 'SOVEREIGNT'}) 
-
-#innerjoin tra df con gli stati del csv (dpm_country), e quelli nella geometria (world), per tenere gli stati in comune
-europe_map = world.merge(dpm_country, on='SOVEREIGNT', how='inner')
-
-#tengo i paesi con valori non nulli
-europe_map_valid = europe_map[europe_map['total_deaths_per_million'] > 0]
-
-# Creo PLOT 1
-fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-europe_map_valid.plot(column='total_deaths_per_million', cmap='Greys', linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
-
-ax.set_xlim([-10, 35])  # Limiti di longitudine
-ax.set_ylim([35, 72])   # Limiti di latitudine
-plt.title('Total Deaths per Million in Europe (COVID-19)', fontsize=15)
-#rimuovo i valori sugli assi x e y
-ax.set_xticks([])
-ax.set_yticks([])
-
-plt.show()
 
 
 
 
-#secondo grafico
-tcpm_country = filtered.groupby('location')['total_cases_per_million'].max().reset_index()
+#funzione per 3 grafici. Essi cambiano in base alla colonna scelta
 
-tcpm_country = tcpm_country.rename(columns={'location': 'SOVEREIGNT'})
-europe_map_cases = world.merge(tcpm_country, on='SOVEREIGNT', how='inner')
+def plot_europe_map(colonna, cmap, color_null=True):
+    
+    #creo un dataframe/voc con le info per il primo grafico (stato, total_death_per_million)
+    dpm_country = filtered.groupby('location')[colonna].max().reset_index()
+    dpm_country = dpm_country.rename(columns={'location': 'SOVEREIGNT'}) 
 
-europe_map_cases_valid = europe_map_cases[europe_map_cases['total_cases_per_million'] > 0]
+    #innerjoin tra df con gli stati di (dpm_country) e (world), 
+    #per tenere gli stati in comune
+    europe_map = world.merge(dpm_country, on='SOVEREIGNT', how='inner')
 
-#CREO PLOT 2
-fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-europe_map_cases_valid.plot(column='total_cases_per_million', cmap='OrRd', linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
+    #divido i paesi con dati validi e quelli con dati nulli
+    europe_map_valid = europe_map[europe_map[colonna] > 0]
+    europe_map_null = europe_map[pd.isna(europe_map[colonna])]
+    
+    fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+    europe_map_valid.plot(column=colonna, cmap=cmap, linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
+    
+    #Condizione per colorare gli stati nulli (uso solo nel terzo grafico)
+    if color_null:
+        europe_map_null.plot(ax=ax, color='none', edgecolor='#D3D3D3', hatch='//', linewidth=0.6, aspect='equal')
+    
+    # Configurazioni dell'asse e titolo
+    ax.set_xlim([-10, 35])
+    ax.set_ylim([35, 72])
+    ax.set_xticks([])
+    ax.set_yticks([])
 
-ax.set_xlim([-10, 35])  # Limiti di longitudine
-ax.set_ylim([35, 72])   # Limiti di latitudine
-plt.title('Total Cases per Million in Europe (COVID-19)', fontsize=15)
+    title_text = colonna.replace("_", " ") + " in Europe (COVID-19)"
+    plt.title(title_text.upper(), fontsize=15)
+    
+    plt.show()
 
-#rimuovo i valori sugli assi x e y
-ax.set_xticks([])
-ax.set_yticks([])
+# Esempi di utilizzo della funzione per vari grafici
+plot_europe_map(colonna='total_deaths_per_million', cmap='Greys', color_null=False)
+plot_europe_map(colonna='total_cases_per_million', cmap='OrRd', color_null=False)
+plot_europe_map(colonna='hosp_patients_per_million', cmap='Blues', color_null=True)
 
-plt.show()
-
-
-
-#terzo grafico 
-hp_country = filtered.groupby('location')['hosp_patients_per_million'].max().reset_index()
-hp_country = hp_country.rename(columns={'location': 'SOVEREIGNT'})
-
-europe_map_hospitals = world.merge(hp_country, on='SOVEREIGNT', how='inner')
-europe_map_hospitals_valid = europe_map_hospitals[europe_map_hospitals['hosp_patients_per_million'] > 0]
-europe_map_hospitals_null = europe_map_hospitals[pd.isna(europe_map_hospitals['hosp_patients_per_million'])]
-
-#CREO PLOT 3
-fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-europe_map_hospitals_valid.plot(column='hosp_patients_per_million', cmap='Blues', linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
-europe_map_hospitals_null.plot(ax=ax, color='none', edgecolor='#D3D3D3', hatch='//', linewidth=0.6, aspect='equal')
-
-
-ax.set_xlim([-10, 35])  # Limiti di longitudine
-ax.set_ylim([35, 72])   # Limiti di latitudine
-#rimuovo i valori sugli assi x e y
-ax.set_xticks([])
-ax.set_yticks([])
-
-plt.title('Hospital Patients per Million in Europe (COVID-19)', fontsize=15)
-plt.show()
 
 
 
 
 # Funzione per grafici interenti alla pandemia in italia
-def grafico_deaths_cases_italia(filtered, add_europa=False, with_asintoti=False):
+def grafico_deaths_cases_italia(add_europa=False, with_asintoti=False):
     #dati per l'Italia
     italy_data = filtered[(filtered['location'] == 'Italy')].copy()
     italy_data['death_case_ratio'] = italy_data['new_deaths'] / italy_data['new_cases']
     
-
     #Metto 'date' in formato datetime, e creo una colonna 'months' partendo da quella 'date'
     italy_data['date'] = pd.to_datetime(italy_data['date'])
     italy_data['month'] = italy_data['date'].dt.to_period('M')
@@ -153,13 +122,13 @@ def grafico_deaths_cases_italia(filtered, add_europa=False, with_asintoti=False)
     plt.show()
 
 #grafico solo per l'Italia senza asintoti
-grafico_deaths_cases_italia(filtered, with_asintoti=False)
+grafico_deaths_cases_italia(with_asintoti=False)
 
 #grafico per l'Italia con gli asintoti
-grafico_deaths_cases_italia(filtered, with_asintoti=True)
+grafico_deaths_cases_italia(with_asintoti=True)
 
 #grafico per l'Italia con il confronto Europa senza asintoti
-grafico_deaths_cases_italia(filtered, add_europa=True, with_asintoti=False)
+grafico_deaths_cases_italia(add_europa=True, with_asintoti=False)
 
 #grafico per l'Italia con il confronto Europa e con asintoti
-grafico_deaths_cases_italia(filtered, add_europa=True, with_asintoti=True)
+grafico_deaths_cases_italia(add_europa=True, with_asintoti=True)
