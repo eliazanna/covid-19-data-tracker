@@ -14,7 +14,7 @@ from selenium.webdriver.chrome.options import Options
 # Configurazione delle opzioni di Chrome
 chrome_options = Options()
 chrome_options.add_experimental_option("prefs", {
-    "download.default_directory": r"C:\Users\eliza\Documents\GitHub\covid-19-data-tracker\csv usati",  # Imposto il percorso di download
+    "download.default_directory": "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati",  # Imposto il percorso di download
     "download.prompt_for_download": False,  # Disabilito il prompt di download
     "download.directory_upgrade": True,
     "safebrowsing.enabled": True
@@ -49,7 +49,7 @@ dati_copiati_italia = pyperclip.paste()
 lista_dati = dati_copiati_italia.split(",")
 new_datastr= lista_dati[23]
 new_data= new_datastr[32:42]
-df=pd.read_csv("C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate.csv")
+df=pd.read_csv("C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_italy.csv")
 ultima_data_salvata = df.iloc[0, 0]
 print(ultima_data_salvata)
 print(new_data)
@@ -80,7 +80,7 @@ else:
     dati_settimana = {"data":  [new_data],"totali positivi": [totale_positivi], "casi totali": [tot_casi],  "terapie intensive": [terapie_intensive],"morti totali": [morti_totali],"tot ospedalizzati": [tot_ospedalizzati]}
     df_nuova_riga = pd.DataFrame(dati_settimana)
     df = pd.concat([ df_nuova_riga, df])
-    df.to_csv("C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate.csv", index=False)  
+    df.to_csv("C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_italy.csv", index=False)  
     print('Dati nuova sett. aggiunti')
 
 
