@@ -32,16 +32,16 @@ df['data'] = pd.to_datetime(df['data']).dt.date #tengo solo la data
 
 # Titolo e descrizione del progetto
 st.title("Is it Covid-19?   Let's play!")
-st.markdown("A non-scientific way to estimate the probability of being affected.  \n""This game is composed of 7 simple questions, good luck!")
+st.markdown("A non-scientific way to estimate the probability of being infected.  \n""This game is composed of 7 simple questions, good luck!")
 st.markdown("""<hr style="border:0.1px solid gray; margin-top: 10px;">""", unsafe_allow_html=True) #linea
 
 # Punto 0: Checkbox per i sintomi attuali
 scelta_utente = st.radio("**1) How do you feel right now?**",  
-["I feel good! Thank you", "Not very good"] )
+["I feel good! Thank you", "Not very good"], index=None)
 
 if scelta_utente == "I feel good! Thank you":
-    st.markdown("😊We are very happy to hear this!  \n""In this case the purpose is to analyze the last time you felt sick by comparing your symptoms with some data, to estimate the probability that you were affected by COVID-19. Let's get started!")
-else:
+    st.markdown("😊We are very happy to hear this!  \n""In this case the purpose is to analyze the last time you felt sick by comparing your symptoms with some data, to estimate the probability that you were infected by COVID-19. Let's get started!")
+elif scelta_utente == "Not very good":
     st.write("😞 Get well soon, warrior!")
 
 
@@ -51,7 +51,7 @@ if scelta_utente != "I feel good! Thank you":
 else:
     fine_settimana = df['data'].unique()
     #inizio_settimana = fine_settimana - pd.Timedelta(days=6)
-    settimana_scelta = st.selectbox("****2) Select the last week you had symptoms****", fine_settimana)
+    settimana_scelta = st.selectbox("**2) Select the last week you had symptoms**", fine_settimana)
 
 
 # Punto 2: Selezione dei sintomi
@@ -64,9 +64,9 @@ else:
 # Punto 3: Selezione della regione
 regioni = df['denominazione_regione'].unique()
 if scelta_utente != "I feel good! Thank you":
-    regione_scelta = st.selectbox("**3) Select your region**", regioni)
+    regione_scelta = st.selectbox("**3) Select your region**", regioni, index=None)
 else:
-    regione_scelta = st.selectbox("**4) Select your region**", regioni)
+    regione_scelta = st.selectbox("**4) Select your region**", regioni, index=None)
 
 #4: Durata dei sintomi
 if scelta_utente != "I feel good! Thank you":
@@ -76,9 +76,9 @@ else:
 
 #5: Gravità dei sintomi
 if scelta_utente != "I feel good! Thank you":
-    gravita_sintomi = st.selectbox("**5) Select the severity of symptoms:**", ["Low", "Mid", "High"])
+    gravita_sintomi = st.selectbox("**5) Select the severity of symptoms:**", ["Low", "Medium", "High"], index=None)
 else:
-    gravita_sintomi = st.selectbox("**6) Select the severity of symptoms:**", ["Low", "Mid", "High"])
+    gravita_sintomi = st.selectbox("**6) Select the severity of symptoms:**", ["Low", "Medium", "High"], index=None)
 
 #6: Contatti con positivi
 if scelta_utente != "I feel good! Thank you":
@@ -116,6 +116,11 @@ if st.button("Calculate probability"):
 
     st.markdown("""<hr style="border:0.1px solid gray; margin-top: 30px;">""", unsafe_allow_html=True) #linea
     
+
+
+#
+
+
     st.subheader("Analysis results:")
 
     #messaggio relativo a sintomi attualmente
@@ -123,55 +128,58 @@ if st.button("Calculate probability"):
         st.write("You indicated that you currently have symptoms. Therefore, we will consider the most recent week.")
     
     #messaggio relativo ai sintomi selezionati
-    if len(sintomi_selezionati) == 0:
-        st.write("You did not select any specific symptoms, so the probability of a COVID-19 infection is marginal.")
-    
-    #Messaggio relativo alla durata dei sintomi
-    if durata_sintomi < 3:
-        st.write("The symptoms lasted only a short time, which may indicate a lower probability of infection, possibly just a common cold.")
-    elif durata_sintomi <= 7:
-        st.write("The symptoms lasted for a moderate period, which doesn’t give much information about the likelihood of infection; the following points will help.")
-    else:
-        st.write("The symptoms lasted a long time, which suggests an increased chance that it could be COVID-19.")
+   
+    indice = 1
 
-    # Messaggio relativo alla gravità dei sintomi
-    if gravita_sintomi == "Low":
-        st.write("The severity of the symptoms is mild, which lowers the probability.")
-    elif gravita_sintomi == "Mid":
-        st.write("The severity of the symptoms is moderate. This suggests a possible infection but doesn't tell us much.")
+    if len(sintomi_selezionati) == 0:
+        st.write(f"💚**{indice}**: You did not select any specific symptoms, so the probability of a COVID-19 infection is marginal.")
+        indice += 1
     else:
-        st.write("The severity of the symptoms is high. COVID-19 often presents with more intense symptoms than a common flu, suggesting an increased probability of infection.")
+        # Messaggio relativo alla durata dei sintomi
+        if durata_sintomi < 3:
+            st.write(f"💚**{indice}**: The symptoms lasted only a short time, which may indicate a lower probability of infection, possibly just a common cold.")
+        elif durata_sintomi <= 7:
+            st.write(f"💛**{indice}**: The symptoms lasted for a moderate period, which doesn’t give much information about the likelihood of infection; the following points will help.")
+        else:
+            st.write(f"💔**{indice}**: The symptoms lasted a long time, which suggests an increased chance of being infected by the virus")
+        indice += 1
+
+        # Messaggio relativo alla gravità dei sintomi
+        if gravita_sintomi == "Low":
+            st.write(f"💚**{indice}**: The severity of the symptoms is mild, which lowers the probability.")
+        elif gravita_sintomi == "Medium":
+            st.write(f"💛**{indice}**: The severity of the symptoms is moderate. This suggests a possible infection but doesn't tell us much.")
+        else:
+            st.write(f"💔**{indice}**: The severity of the symptoms is high. COVID-19 often presents with more intense symptoms than a common flu, suggesting an increased probability of infection.")
+        indice += 1
 
     # Messaggio relativo ai contatti con positivi
     if contatto_con_positivi:
-        st.write("The fact that you had contact with someone positive for COVID-19 is concerning... Did you really need software to realize you were at high risk?")
-    
+        st.write(f"💔**{indice}**: You did have a known contact with positive cases, increasing a lot the risk.")
+    else:
+        st.write(f"💚**{indice}**: You didn't have any known contact with positive cases, reducing the risk.")
+    indice +=1
     # Messaggio relativo alla differenza percentuale dei nuovi casi rispetto alla media
     if percentuale_diff > 0:
-        st.write("That week, new cases in " + regione_scelta + " were " + str(round(percentuale_diff, 1)) + "% higher than the average cases throughout the year in that region.")
+        st.write(f"💔**{indice}**: That week, new cases in " + regione_scelta + " were " + str(round(percentuale_diff, 1)) + "% higher than the average cases throughout the year in that region.")
     else:
-        st.write("That week, new cases in " + regione_scelta + " were " + str(round(abs(percentuale_diff), 1)) + "% lower than the average cases throughout the year in that region.")
+        st.write(f"💚**{indice}**: That week, new cases in " + regione_scelta + " were " + str(round(abs(percentuale_diff), 1)) + "% lower than the average cases throughout the year in that region.")
+    indice +=1
 
-    # Messaggio 1 sui tamponi e rapporto di positività
-    st.write("The tests conducted were " + str(int(tamponi_settimanali)) + ", with a positivity rate of " + str(round(rapporto_positivi, 1)) + "%.")
-    st.write("On average, the percentage of positive tests in " + regione_scelta + " is " + str(round(media_rapporto_positivi, 1)) + "%.")
-
-
-    # Messaggio 2 sui tamponi basato sul rapporto di positività
-    if rapporto_positivi < media_rapporto_positivi * 0.5:
-        st.write("The positivity rate is much lower than average, suggesting a high chance that it was a flu, not COVID.")
-    elif rapporto_positivi < media_rapporto_positivi:
-        st.write("The positivity rate is below average, suggesting a moderate chance that it was a flu, not COVID.")
-    elif rapporto_positivi <= media_rapporto_positivi * 1.1:
-        st.write("The positivity rate is close to average, so the probability it was COVID is neutral.")
+    # Messaggio sui tamponi basato sul rapporto di positività
+    if rapporto_positivi < media_rapporto_positivi * 0.3:
+        st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is very lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chances of getting infected in that period are very low!")
+    if rapporto_positivi < media_rapporto_positivi * 0.8:
+        st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chances of getting infected in that period are low!")
+    elif rapporto_positivi <= media_rapporto_positivi * 1.2:
+        st.markdown(f"💛**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is close to the average positivity rate in that region during the year(" + str(round(media_rapporto_positivi, 1)) + "%): This doesn't tell us much about the chances of getting infected.")
     elif rapporto_positivi <= media_rapporto_positivi * 1.5:
-        st.write("The positivity rate is above average, suggesting a moderate chance it was COVID.")
+        st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is higher than the average positivity rate in that region during the year(" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period are high!")
     else:
-        st.write("The positivity rate is much higher than average, suggesting a high chance it was COVID.")
-
+        st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is a lot higher than the average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period are very high!")
     #risultato della probabilità finale
     st.subheader("Final Probability:")
-    color = "green" if probabilita in ["Molto Bassa" ,"Bassa"] else "orange" if probabilita== "Media" else "red"
+    color = "green" if probabilita in ["Very low" ,"Low"] else "orange" if probabilita== "Medium" else "red"
     testo = probabilita + ": " + str(round(prob_perc_standardizzata, 1)) + "%"
     html_testo = "<h2 style='color:" + color + ";'>" + testo + "</h2>" #colore e testo ma in stringa html
     st.markdown(html_testo, unsafe_allow_html=True)

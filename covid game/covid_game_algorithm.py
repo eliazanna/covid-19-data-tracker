@@ -34,9 +34,9 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
         durata_moltiplicatore = 2 # Sintomi di lunga durata, più probabile COVID
 
     # 3) Moltiplicatore in base alla gravità dei sintomi
-    if gravita_sintomi == "Lieve":
+    if gravita_sintomi == "Low":
         gravita_moltiplicatore = 0.8  # Sintomi lievi, meno probabile COVID
-    elif gravita_sintomi == "Moderata":
+    elif gravita_sintomi == "Medium":
         gravita_moltiplicatore = 1.0  # Sintomi moderati, probabilità standard
     else:
         gravita_moltiplicatore = 1.3  # Sintomi severi, più probabile COVID
@@ -102,16 +102,15 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
 
 
     if prob_perc_standardizzata > 40:
-        probabilita_finale = "Molto Alta"
+        probabilita_finale = "Very high"
     elif prob_perc_standardizzata > 25:
-        probabilita_finale = "Alta"
+        probabilita_finale = "high"
     elif prob_perc_standardizzata > 15:
-        probabilita_finale = "Media"
+        probabilita_finale = "Medium"
     elif prob_perc_standardizzata> 5:
-        probabilita_finale = "Bassa"
+        probabilita_finale = "Low"
     else:
-        probabilita_finale = "Molto Bassa"
-
+        probabilita_finale = "Very low"
 
     return probabilita_finale, dict_moltiplicatori, round(prob_perc_standardizzata, 1)
 
