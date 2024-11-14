@@ -9,7 +9,7 @@ def grafico_regioni(title, colonna):
     file_csv = "c:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
     shapefile_path = "c:/Users/eliza/Documents/GitHub/covid-19-data-tracker/geometrie/mappa italia/Reg01012024_g_WGS84.shp"
 
-    df_csv = pd.read_csv(file_csv)
+    df_csv = pd.read_csv(file_csv, nrows=20)
     data_piu_recente = df_csv['data'].max()
     df_csv = df_csv[df_csv['data'] == data_piu_recente] #tengo solo i dati piu recenti 
 
@@ -29,19 +29,17 @@ def grafico_regioni(title, colonna):
 
     df_unito.plot(column=colonna, cmap='OrRd', linewidth=1, ax=asse, edgecolor='black', legend=False, norm=norm)
 
-    # Aggiungi la colorbar orizzontale con normalizzazione
+    #colorbar orizzontale con normalizzazione
     mappatore_colori = plt.cm.ScalarMappable(cmap='OrRd', norm=norm)
     mappatore_colori._A = []
-    colorbar = plt.colorbar(mappatore_colori, ax=asse, orientation='horizontal', fraction=0.02, pad=0.1)
+    colorbar = plt.colorbar(mappatore_colori, ax=asse, orientation='horizontal', fraction=0.02, pad=-0.1)
     colorbar.set_label('Scala logaritmica')# Aggiungi un'etichetta alla colorbar
-
 
     # Rimuovo cornice e valori sugli assi
     asse.set_frame_on(False)
     asse.set_xticks([])
     asse.set_yticks([])
 
-    # Aggiungi un titolo al grafico
     plt.title(title, fontsize=15)
 
     return fig

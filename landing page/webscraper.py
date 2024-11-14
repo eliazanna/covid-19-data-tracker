@@ -102,7 +102,7 @@ else:
 
     # Sostituisco i nomi di "P.A. Bolzano" e "P.A. Trento" con "Trentino-Alto Adige" nel DataFrame prima del raggruppamento
     df['denominazione_regione'] = df['denominazione_regione'].replace(['P.A. Bolzano', 'P.A. Trento'], 'Trentino-Alto Adige')
-
+    df['denominazione_regione'] = df['denominazione_regione'].replace("Friuli Venezia Giulia", "Friuli-Venezia Giulia")
     # Raggruppo i dati settimanalmente in base a 'denominazione_regione' e 'custom_week'
     # necessito di grouppare tramite due colonne!!
 
