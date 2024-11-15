@@ -4,6 +4,7 @@ import numpy as np
 import streamlit.components.v1 as components
 
 from plot_color_regions import grafico_regioni
+from plot_color_europe import plot_europe_map
 
 
 # Aggiungere stile CSS per modificare il colore di tutto il testo e il background della pagina
@@ -186,6 +187,48 @@ st.markdown(
 )
 
 
-
 st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 15px; width: 100%;" />""", unsafe_allow_html=True )
 
+
+# Breve spiegazione in base alla variazione percentuale dei casi totali
+if change_weekly_new_cases > 10:
+    st.write("a")
+
+elif 0 < change_weekly_new_cases <= 10:
+    st.write("b")
+
+elif -10 < change_weekly_new_cases <= 0:
+    st.write("c")
+
+else:
+    st.write("d")
+
+
+# Sezione 2: Mappe e analisi dei dati storici
+st.header("The effects of Covid-19 in Europe")
+
+# Crea una tabella interattiva per scegliere i grafici
+option = st.selectbox(
+    '',
+    ('Total Cases per Million', 'Total Deaths per Million', 'Hospital Patients per Million'))
+# Mostra il grafico in base alla selezione
+if option == 'Total Cases per Million':
+    st.write("**Total Cases per Million in Europe**")
+    st.write("This map shows the total cases per million people in Europe, highlighting the spread of the virus across the continent.")
+    fig3 = plot_europe_map(colonna='total_cases_per_million', cmap='OrRd', color_null=False)  # Assuming this function returns a Matplotlib figure
+    st.pyplot(fig3)
+
+elif option == 'Total Deaths per Million':
+    st.write("**Total Deaths per Million in Europe**")
+    st.write("This map displays the total deaths per million people in Europe, providing insight into the mortality impact.")
+    fig4 = plot_europe_map(colonna='total_deaths_per_million', cmap='Greys', color_null=False)
+  # Assuming this function returns a Matplotlib figure
+    st.pyplot(fig4)
+
+    
+else:
+    st.write("**Hospital Patients per Million in Europe**")
+    st.write("This map shows the number of hospital patients per million people in Europe, reflecting the pressure on the healthcare system.")
+    fig5 = plot_europe_map(colonna='hosp_patients_per_million', cmap='Blues', color_null=True)
+  # Assuming this function returns a Matplotlib figure
+    st.pyplot(fig5)

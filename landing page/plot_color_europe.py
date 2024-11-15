@@ -2,6 +2,7 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
+
 doc = pd.read_csv('C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/covid-data.csv')
 
 #prendo i paesi europei, con date a partire da 10 febbraio
@@ -25,7 +26,6 @@ world['SOVEREIGNT'] = world['SOVEREIGNT'].replace("Republic of Serbia", "Serbia"
 
 
 
-
 #funzione per 3 grafici. Essi cambiano in base alla colonna scelta
 
 def plot_europe_map(colonna, cmap, color_null=True):
@@ -43,6 +43,9 @@ def plot_europe_map(colonna, cmap, color_null=True):
     europe_map_null = europe_map[pd.isna(europe_map[colonna])]
     
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+    # Rimuovo lo sfondo
+    ax.set_facecolor('none') 
+    fig.patch.set_alpha(0)
     europe_map_valid.plot(column=colonna, cmap=cmap, linewidth=0.2, ax=ax, edgecolor='black', legend=True, aspect='equal')
     
     #Condizione per colorare gli stati nulli (uso solo nel terzo grafico)
@@ -58,7 +61,7 @@ def plot_europe_map(colonna, cmap, color_null=True):
     title_text = colonna.replace("_", " ") + " in Europe (COVID-19)"
     plt.title(title_text.upper(), fontsize=15)
     
-    plt.show()
+    return fig
 
 # Esempi di utilizzo della funzione per vari grafici
 plot_europe_map(colonna='total_deaths_per_million', cmap='Greys', color_null=False)
