@@ -64,9 +64,9 @@ def plot_europe_map(colonna, cmap, color_null=True):
     return fig
 
 # Esempi di utilizzo della funzione per vari grafici
-plot_europe_map(colonna='total_deaths_per_million', cmap='Greys', color_null=False)
-plot_europe_map(colonna='total_cases_per_million', cmap='OrRd', color_null=False)
-plot_europe_map(colonna='hosp_patients_per_million', cmap='Blues', color_null=True)
+#plot_europe_map(colonna='total_deaths_per_million', cmap='Greys', color_null=False)
+#plot_europe_map(colonna='total_cases_per_million', cmap='OrRd', color_null=False)
+#plot_europe_map(colonna='hosp_patients_per_million', cmap='Blues', color_null=True)
 
 
 
@@ -84,25 +84,25 @@ def grafico_deaths_cases_italia(add_europa=False, with_asintoti=False):
     monthly_ratio = italy_data.groupby('month')['death_case_ratio'].mean().reset_index()
 
     #grafico base per l'Italia
+    fig, ax = plt.subplots(figsize=(12, 6))  # Creazione della figura e asse
     x_italy = monthly_ratio['month'].astype(str)
     y_italy = monthly_ratio['death_case_ratio']
     
-    plt.figure(figsize=(12,6))
-    plt.plot(x_italy, y_italy, color='b', linewidth='1.2', label='Italy')
-    plt.title('New deaths on new cases: Italy', fontsize=16, fontweight='bold', color='#333333' )
+    ax.plot(x_italy, y_italy, color='b', linewidth='1.2', label='Italy')
+    ax.set_title('New deaths on new cases: Italy', fontsize=16, fontweight='bold', color='#333333')
     
     #Personalizzo le etichette dell'asse X per mostrare solo gli anni
     unique_years = monthly_ratio['month'].dt.year.unique()
     positions = [monthly_ratio[monthly_ratio['month'].dt.year == year].index[0] for year in unique_years]
-    plt.xticks(positions, unique_years, fontsize=10, fontweight='bold')
-    plt.yticks(fontsize=10, fontweight='bold')
+    ax.set_xticks(positions)
+    ax.set_xticklabels(unique_years, fontsize=10, fontweight='bold')
+    ax.tick_params(axis='y', labelsize=10)
 
     #asintoti vaccini, se richiesto
     if with_asintoti:
-        plt.axvline(x='2021-05', color='gold', linestyle='--', linewidth=1.5, label='40% of the population vaccinated')
-        plt.axvline(x='2021-07', color='#DAA520', linestyle='--',linewidth=1.5, label='50% of the population vaccinated')
-        plt.axvline(x='2021-09', color='#FFB900', linestyle='--',linewidth=1.5, label='60% of the population vaccinated')
-
+        ax.axvline(x='2021-05', color='gold', linestyle='--', linewidth=1.5, label='40% of the population vaccinated')
+        ax.axvline(x='2021-07', color='#DAA520', linestyle='--',linewidth=1.5, label='50% of the population vaccinated')
+        ax.axvline(x='2021-09', color='#FFB900', linestyle='--',linewidth=1.5, label='60% of the population vaccinated')
 
     #confronto con Europa, se richiesto
     if add_europa:
@@ -116,22 +116,24 @@ def grafico_deaths_cases_italia(add_europa=False, with_asintoti=False):
         y_europe = europe_monthly['death_case_ratio']
 
         # Aggiungo la linea dell'Europa al grafico
-        plt.plot(x_europe, y_europe, color='r',linewidth=1 , label='Europe')
-        plt.title('New deaths on new cases: Italy vs Europe', fontsize=16, fontweight='bold', color='#333333')
+        ax.plot(x_europe, y_europe, color='r',linewidth=1 , label='Europe')
+        ax.set_title('New deaths on new cases: Italy vs Europe', fontsize=16, fontweight='bold', color='#333333')
     
-    plt.grid(visible=True, which='major', color='#E0E0E0', linestyle='-', linewidth=0.5)  # Griglia leggera
-    plt.tight_layout()
-    plt.legend(loc='upper right', fontsize=10, frameon=False) 
-    plt.show()
+    ax.grid(visible=True, which='major', color='#E0E0E0', linestyle='-', linewidth=0.5)  # Griglia leggera
+    ax.legend(loc='upper right', fontsize=10, frameon=False) 
+ 
+    
+    return fig
 
 #grafico solo per l'Italia senza asintoti
-grafico_deaths_cases_italia(with_asintoti=False)
+#grafico_deaths_cases_italia(with_asintoti=False)
 
 #grafico per l'Italia con gli asintoti
-grafico_deaths_cases_italia(with_asintoti=True)
+#grafico_deaths_cases_italia(with_asintoti=True)
 
 #grafico per l'Italia con il confronto Europa senza asintoti
-grafico_deaths_cases_italia(add_europa=True, with_asintoti=False)
+#grafico_deaths_cases_italia(add_europa=True, with_asintoti=False)
 
 #grafico per l'Italia con il confronto Europa e con asintoti
 grafico_deaths_cases_italia(add_europa=True, with_asintoti=True)
+

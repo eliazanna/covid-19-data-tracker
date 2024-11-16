@@ -27,9 +27,9 @@ weeklyupdate_italy.to_csv(csv_path_italy, index=False)
 
 
 #simulo una rimozione 20 RIGHE in df weeklyupdate_regions
-
+'''
 csv_path_regions= "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
 weeklyupdate_regions = pd.read_csv(csv_path_regions)
-weeklyupdate_regions['denominazione_regione'] = weeklyupdate_regions['denominazione_regione'].replace("Friuli Venezia Giulia", "Friuli-Venezia Giulia")
-#weeklyupdate_regions= weeklyupdate_regions.drop(weeklyupdate_regions.index[0:20])
+weeklyupdate_regions= weeklyupdate_regions.drop(weeklyupdate_regions.index[0:20])
 weeklyupdate_regions.to_csv(csv_path_regions, index=False)
+'''
