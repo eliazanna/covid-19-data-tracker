@@ -7,6 +7,8 @@ from covid_game_algorithm import calcola_probabilita  # Importa la funzione dal 
 #per i colori non funziona il metodo theming consigliato da streamlit
 #uso html
 
+st.set_page_config(page_title="COVID GAME")
+
 st.markdown(
     """
     <style>
@@ -23,12 +25,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 # Percorso del file CSV con i dati settimanali
 file_path = "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
 df = pd.read_csv(file_path)
 
 df['data'] = pd.to_datetime(df['data']).dt.date #tengo solo la data
+
 
 # Titolo e descrizione del progetto
 st.title("Is it Covid-19?   Let's play!")
@@ -70,15 +72,15 @@ else:
 
 #4: Durata dei sintomi
 if scelta_utente != "I feel good! Thank you":
-    durata_sintomi = st.slider("**4) How many days have you had symptoms?**", min_value=1, max_value=30, value=5)
+    durata_sintomi = st.slider("**4) How many days have you had symptoms?**", min_value=1, max_value=20, value=5)
 else:
-    durata_sintomi = st.slider("**5) How many days did you have symptoms?**", min_value=1, max_value=30, value=5)
+    durata_sintomi = st.slider("**5) How many days did you have symptoms?**", min_value=1, max_value=20, value=5)
 
 #5: Gravità dei sintomi
 if scelta_utente != "I feel good! Thank you":
     gravita_sintomi = st.selectbox("**5) Select the severity of symptoms:**", ["Low", "Medium", "High"], index=None)
 else:
-    gravita_sintomi = st.selectbox("**6) Select the severity of symptoms:**", ["Low", "Medium", "High"], index=None)
+    gravita_sintomi = st.selectbox("**6) Select the severity of symptoms:**", ["Low", "Medium", "High"],  )
 
 #6: Contatti con positivi
 if scelta_utente != "I feel good! Thank you":
@@ -117,9 +119,7 @@ if st.button("Calculate probability"):
     st.markdown("""<hr style="border:0.1px solid gray; margin-top: 30px;">""", unsafe_allow_html=True) #linea
     
 
-
-#
-
+# section 3
 
     st.subheader("Analysis results:")
 
@@ -128,7 +128,7 @@ if st.button("Calculate probability"):
         st.write("You indicated that you currently have symptoms. Therefore, we will consider the most recent week.")
     
     #messaggio relativo ai sintomi selezionati
-   
+
     indice = 1
 
     if len(sintomi_selezionati) == 0:
@@ -138,7 +138,7 @@ if st.button("Calculate probability"):
         # Messaggio relativo alla durata dei sintomi
         if durata_sintomi < 3:
             st.write(f"💚**{indice}**: The symptoms lasted only a short time, which may indicate a lower probability of infection, possibly just a common cold.")
-        elif durata_sintomi <= 7:
+        elif durata_sintomi <= 6:
             st.write(f"💛**{indice}**: The symptoms lasted for a moderate period, which doesn’t give much information about the likelihood of infection; the following points will help.")
         else:
             st.write(f"💔**{indice}**: The symptoms lasted a long time, which suggests an increased chance of being infected by the virus")
@@ -168,25 +168,33 @@ if st.button("Calculate probability"):
 
     # Messaggio sui tamponi basato sul rapporto di positività
     if rapporto_positivi < media_rapporto_positivi * 0.3:
-        st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is very lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chances of getting infected in that period are very low!")
+        st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is very lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chances of getting infected in that period was very low!")
     if rapporto_positivi < media_rapporto_positivi * 0.8:
-        st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chances of getting infected in that period are low!")
+        st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chances of getting infected in that period was low!")
     elif rapporto_positivi <= media_rapporto_positivi * 1.2:
         st.markdown(f"💛**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is close to the average positivity rate in that region during the year(" + str(round(media_rapporto_positivi, 1)) + "%): This doesn't tell us much about the chances of getting infected.")
     elif rapporto_positivi <= media_rapporto_positivi * 1.5:
-        st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is higher than the average positivity rate in that region during the year(" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period are high!")
+        st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is higher than the average positivity rate in that region during the year(" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period was high!")
     else:
-        st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is a lot higher than the average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period are very high!")
+        st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is a lot higher than the average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period was very high!")
+
+    st.markdown("""<hr style="border:0.1px solid gray; margin-top: 10px;">""", unsafe_allow_html=True) #linea
+
     #risultato della probabilità finale
-    st.subheader("Final Probability:")
-    color = "green" if probabilita in ["Very low" ,"Low"] else "orange" if probabilita== "Medium" else "red"
-    testo = probabilita + ": " + str(round(prob_perc_standardizzata, 1)) + "%"
-    html_testo = "<h2 style='color:" + color + ";'>" + testo + "</h2>" #colore e testo ma in stringa html
-    st.markdown(html_testo, unsafe_allow_html=True)
-    
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Final Probability:")
+    with col2:
+        color = "green" if probabilita in ["Very low" ,"Low"] else "orange" if probabilita== "Medium" else "red"
+        testo = probabilita + ": " + str(round(prob_perc_standardizzata, 1)) + "%"
+        html_testo = "<span style='color:" + color + "; font-size:2em; font-weight:bold;'>" + testo + "</span>" #colore e testo ma in stringa html
+        st.markdown(html_testo, unsafe_allow_html=True)
+
+    st.markdown("""<hr style="border:0.1px solid gray; margin-top: 30px;">""", unsafe_allow_html=True) #linea
 
     #DA TOGLIERE: Debug PER ME Mostra i valori dei MOLTIPLICATORI
     #if dict_moltiplicatori:
     #    st.write("Valori dei dict_moltiplicatori (Debug)") 
     #    for key in dict_moltiplicatori: #dictionary
-     #      st.write(key + ": " + str(dict_moltiplicatori[key]))
+    #      st.write(key + ": " + str(dict_moltiplicatori[key]))

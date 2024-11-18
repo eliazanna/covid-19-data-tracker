@@ -25,8 +25,8 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
 
     # 2) Moltiplicatore in base alla durata dei sintomi
     if durata_sintomi < 3:
-        durata_moltiplicatore = 0.6  # Sintomi di breve durata, meno probabile COVID
-    elif durata_sintomi <= 7:
+        durata_moltiplicatore = 0.7  # Sintomi di breve durata, meno probabile COVID
+    elif durata_sintomi < 7:
         durata_moltiplicatore = 1.4  # Sintomi di durata moderata, probabilità standard
     elif durata_sintomi <= 10:
         durata_moltiplicatore = 1.6

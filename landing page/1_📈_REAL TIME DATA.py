@@ -3,37 +3,16 @@ import pandas as pd
 import numpy as np
 import streamlit.components.v1 as components
 
-from plot_color_regions import grafico_regioni
-from plot_color_europe import plot_europe_map
+from plots_functions import grafico_regioni
+from plots_functions import plot_europe_map
+from plots_functions import grafico_deaths_cases_italia
 
 
-# Aggiungere stile CSS per modificare il colore di tutto il testo e il background della pagina
-st.markdown(
-    
-     """
-    <style>
-     /*colore di sfondo della pagina */
-    .stApp { background-color: #f5f5f5;  }
+st.sidebar.success("Select a demo above.")
 
-    /* Colore di sfondo secondario*/
-    .css-1d391kg, .css-1aumxhk {background-color: #fffceb; }
+#CSS per modificare il background della pagina
+st.markdown("""<style>.stApp { background-color: #f0f8ff;  } /*colore di sfondo della pagina */</style>""", unsafe_allow_html=True)
 
-    /* testo principale */
-    h1, h2, h3, h4, h5, h6, p, label {#4d4d4d; }
-
-    .stMarkdown p {color: #4d4d4d;}
-    .stRadio label {color: #4d4d4d}
-    
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-st.title("Real-Time COVID-19")
-
-
-st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 50px; width: 100%;" />""", unsafe_allow_html=True )
 
 #file CSV con i dati settimanali
 path_italia= "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_italy.csv"
@@ -67,14 +46,20 @@ change_hospital_patients = ((hospital_patients - prev_hospital_patients) / prev_
 change_weekly_deaths = ((weekly_deaths - prev_weekly_deaths)/ prev_weekly_deaths) * 100
 change_weekly_new_cases= ((weekly_new_cases - prev_weekly_new_cases)/prev_weekly_new_cases) * 100
 
-
-
 #inizio interfaccia grafica
 
-# Creazione delle colonne
-col1, col2 = st.columns([1.5,1.3]) 
+st.title("Real-Time COVID-19")
+st.markdown('<h3 style="color:red;">Current situation compared to the previous week', unsafe_allow_html=True)      
 
-#freccia e valore percenutali colorati in base a delta
+lastdata= most_recent_data['data']
+st.markdown(f"""<div style="text-align: right; color: #a9a9a9">Last update: {lastdata}</div>""",unsafe_allow_html=True)
+st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; margin-top: -5px; width: 100%;" />""", unsafe_allow_html=True )
+
+
+#----------------------------------------------------------------------
+#defining colors(1) and grafic boxes (2, with css)
+
+#(1) freccia e valore percenutali colorati in base a delta
 def format_delta(delta, value=None):
     arrow = "↑" if delta > 0 else "↓"
     color = "red" if delta > 0 else "green"
@@ -84,12 +69,9 @@ def format_delta(delta, value=None):
     else:
         return '<span style="color: ' + color + ';">' + arrow + ' ' + str(round(abs(delta), 1)) + '%</span>'
 
-
-# CSS per creare i box
+#2 creating boxes
 st.markdown(
-    """
-    <style>
-    .metric-box {
+    """<style>.metric-box {
         border: 1px solid #d3d3d3; 
         padding: 2px;
         margin-bottom: 6px;  /* Spazio tra i box */
@@ -98,18 +80,21 @@ st.markdown(
     }
     .metric-label {font-size: 16px; color: #000000;}
     .metric-value {font-size: 28px;}
-    .metric-delta {font-size: 14px;}
-    </style>
-    """,
+    .metric-delta {font-size: 14px;}</style>""",
     unsafe_allow_html=True
 )
 
-# Mostra i dati con i box attorno
+
+#-------------------------------------------------------------------
+#creo due colonne ed inizio a riempirle, 
+#quella a sinistra con i nuovi valori importati, colorati tramite la funzione 
+#sovrastante e inseriti nei box. Quella a destra con mappa importata
+
+
+col1, col2 = st.columns([1.5,1.3]) 
 with col1: 
-    st.markdown('<h2 style="color:red;">Current Situation. <br> Compared to the previous week</h2>', unsafe_allow_html=True)        
     st.write('')
-
-
+    st.write('')
     st.markdown(f"""
 
     <div class="metric-box">
@@ -143,10 +128,9 @@ with col1:
 #visualizziamo il grafico nella colonna di destra
 with col2:
     
-    st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
-    fig1 = grafico_regioni('', 'nuovi_positivi')
-    fig2 = grafico_regioni('', 'totale_positivi')
+    fig1 = grafico_regioni('nuovi_positivi')
+    fig2 = grafico_regioni('totale_positivi')
     scegli_grafico_regioni = st.selectbox("", ['Distribution of new cases (log scale)', 'Distribution of currently positive (log scale) '])
 
 
@@ -162,7 +146,8 @@ with col2:
         numero_min = df_regioni['nuovi_positivi'].min()
         st.pyplot(grafico_da_mostrare)
         st.markdown("Most new-cases: "  + "**" + str(regione_max_casi) + "**" + " (" + str(numero_max) + ")  \n"
-                    "Less new-cases: "  + "**" + str(regione_min_casi) + "**" + " (" + str(numero_min) + ")")
+         "Less new-cases: "  + "**" + str(regione_min_casi) + "**" + " (" + str(numero_min) + ")")
+
         
     else:
         grafico_da_mostrare = fig2
@@ -208,27 +193,83 @@ else:
 st.header("The effects of Covid-19 in Europe")
 
 # Crea una tabella interattiva per scegliere i grafici
-option = st.selectbox(
-    '',
+option = st.selectbox('',
     ('Total Cases per Million', 'Total Deaths per Million', 'Hospital Patients per Million'))
 # Mostra il grafico in base alla selezione
+
 if option == 'Total Cases per Million':
     st.write("**Total Cases per Million in Europe**")
     st.write("This map shows the total cases per million people in Europe, highlighting the spread of the virus across the continent.")
-    fig3 = plot_europe_map(colonna='total_cases_per_million', cmap='OrRd', color_null=False)  # Assuming this function returns a Matplotlib figure
+    fig3 = plot_europe_map(colonna='total_cases_per_million', cmap='OrRd', color_null=False) 
     st.pyplot(fig3)
 
 elif option == 'Total Deaths per Million':
     st.write("**Total Deaths per Million in Europe**")
     st.write("This map displays the total deaths per million people in Europe, providing insight into the mortality impact.")
     fig4 = plot_europe_map(colonna='total_deaths_per_million', cmap='Greys', color_null=False)
-  # Assuming this function returns a Matplotlib figure
     st.pyplot(fig4)
 
-    
 else:
     st.write("**Hospital Patients per Million in Europe**")
     st.write("This map shows the number of hospital patients per million people in Europe, reflecting the pressure on the healthcare system.")
     fig5 = plot_europe_map(colonna='hosp_patients_per_million', cmap='Blues', color_null=True)
-  # Assuming this function returns a Matplotlib figure
     st.pyplot(fig5)
+
+st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 15px; width: 100%;" />""", unsafe_allow_html=True )
+#-------------------------------------------------------------------------------------
+
+# Creazione di opzioni di selezione per il confronto
+confronto = st.selectbox( "",
+    ['Compare with vaccinated population', 'Compare with European average'])
+
+# Mostra il grafico in base alla selezione
+if confronto == 'Compare with vaccinated population':
+    st.write("Comparing new deaths on new cases with the vaccinated population gives insight into the effectiveness of vaccination in reducing deaths.")
+    st.pyplot(grafico_deaths_cases_italia(with_asintoti=True))
+
+else:
+    st.write("Comparing new deaths on new cases with the European average highlights how the country fares in relation to its neighbors.")
+    st.pyplot(grafico_deaths_cases_italia(add_europa=True, with_asintoti=False))
+
+
+st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 15px; width: 100%;" />""", unsafe_allow_html=True )
+#--------------------------------------------------------------------------------------
+#newsletter
+
+
+
+@st.dialog("Iscrive here")
+def subscribe():
+    st.write("Get updates directly in your inbox. Please enter your details:")
+    name = st.text_input("Your Name:")
+    email = st.text_input("Email Address:")
+    if st.button("Subscribe"):
+        if name and email:
+            st.session_state.subscription = {"name": name, "email": email}
+
+
+            #metto nel csv
+            path="C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/newsletter_list.csv"
+            df_newsletter = pd.read_csv(path)
+            newrow= pd.DataFrame({"name": [name] , "email": [email]})
+            df_newsletter=pd.concat([newrow, df_newsletter])
+            df_newsletter.to_csv((path), index=False)  #Salva il CSV aggiornato
+            print("dati aggiunti")
+
+            st.success(f"Thank you, {name}, for subscribing!")
+        
+        else:
+            st.error("Please enter both your name and email.")
+
+if "subscription" not in st.session_state:
+    st.write("Join our newsletter for the latest updates!")
+    if st.button("Subscribe", key="open_subscribe_dialog"):
+        subscribe()
+else:
+    st.write(f"You are subscribed with the name: {st.session_state.subscription['name']} and email: {st.session_state.subscription['email']}")
+
+
+
+
+
+
