@@ -1,5 +1,15 @@
-#algoritmo che calcola la probabilità di contagio
+"""
+This function calculates the probability of having contracted Covid-19 based on several user inputs and region-specific data.
+This is the heart algoritm of the streamlit "covid game" webpage, and to give a result takes into account the following factors:
 
+1. Region and week-specific data (new cases, tests performed, positive tests).
+2. Symptom-related details: Number, duration, and severity of symptoms.
+3. Contact history with confirmed positive cases.
+4. Local Covid-19 trends (comparison of new cases and positive test rates to historical averages).
+
+Each factor contributes a multiplier to the probability calculation. The final probability is standardized and classified 
+into one of five levels: "Very low", "Low", "Medium", "High", or "Very high".
+"""
 def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita_sintomi, contatto_con_positivi):
     
     # Filtra il DataFrame per la regione e settimana specifiche

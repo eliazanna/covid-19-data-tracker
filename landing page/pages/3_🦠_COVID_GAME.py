@@ -6,22 +6,16 @@ from covid_game_algorithm import calcola_probabilita  # Importa la funzione dal 
 
 #per i colori non funziona il metodo theming consigliato da streamlit 
 # #uso html
+st.markdown("""<style>.stApp { background-color: #fff3b1;  } /*colore di sfondo della pagina */</style>""", unsafe_allow_html=True)
 
-st.set_page_config(page_title="COVID GAME")
-
-st.markdown(
-    """<style>
-    .stApp { background-color: #fff3b1;  } /*colore di sfondo della pagina */
-    .css-1d391kg, .css-1aumxhk {background-color: #fffceb; } /* Colore di sfondo secondario*/
-    </style>"""
-    ,unsafe_allow_html=True)
 
 # Percorso del file CSV con i dati settimanali
 file_path = "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
 df = pd.read_csv(file_path)
 
-df['data'] = pd.to_datetime(df['data']).dt.date #tengo solo la data
+df['data'] = pd.to_datetime(df['data']).dt.date #converto in datetime e tengo solo la data
 
+#-------------------------------------------------------------------------------------
 # Titolo e descrizione del progetto
 st.title("Is it Covid-19?   Let's play!")
 st.markdown("A non-scientific way to estimate the probability of being infected.  \n""This game is composed of 7 simple questions, good luck!")
@@ -108,8 +102,8 @@ if st.button("Calculate probability"):
     st.markdown("""<hr style="border:0.1px solid gray; margin-top: 30px;">""", unsafe_allow_html=True) #linea
     
 
-# section 3
-
+#-------------------------------------------------------------------------------------------------------------
+#text part, depending on user interations
     st.subheader("Analysis results:")
 
     #messaggio relativo a sintomi attualmente

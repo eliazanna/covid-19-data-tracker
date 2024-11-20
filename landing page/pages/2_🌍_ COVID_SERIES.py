@@ -1,14 +1,10 @@
 #historic covid series
 
 import streamlit as st
-import numpy as np
+from plots_functions import plot_europe_map
+from plots_functions import death_case_ratio
 
 st.set_page_config(page_title="COVID SERIES")
-
-from plots_functions import plot_europe_map
-from plots_functions import grafico_deaths_cases_italia
-
-
 st.header("The effects of Covid-19 in Europe")
 
 #selectbox per scegliere il grafico 1
@@ -40,19 +36,19 @@ add_europa = st.checkbox("Compare with European average")
 
 # Mostra il risultato basato sulle selezioni
 if add_europa and with_asintoti:
-    st.pyplot(grafico_deaths_cases_italia(add_europa=add_europa, with_asintoti=with_asintoti))
+    st.pyplot(death_case_ratio(add_europa=add_europa, with_asintoti=with_asintoti))
     st.write("Comparing with both the European average and the vaccinated population provides a comprehensive view of Italy's performance.")
     st.write("The comparison highlights how Italy fares relative to other European countries and evaluates the effectiveness of vaccination in reducing COVID-19 deaths.")
 elif with_asintoti:
-    st.pyplot(grafico_deaths_cases_italia(add_europa=add_europa, with_asintoti=with_asintoti))
+    st.pyplot(death_case_ratio(add_europa=add_europa, with_asintoti=with_asintoti))
     st.write("Comparing new deaths on new cases with the vaccinated population gives insight into the role of vaccination in mitigating the severity of COVID-19 in Italy.")
     st.write("This analysis emphasizes how the vaccination campaign impacts the ratio of new deaths to new cases over time.")
 elif add_europa:
-    st.pyplot(grafico_deaths_cases_italia(add_europa=add_europa, with_asintoti=with_asintoti))
+    st.pyplot(death_case_ratio(add_europa=add_europa, with_asintoti=with_asintoti))
     st.write("Comparing new deaths on new cases with the European average highlights Italy's position relative to its neighbors.")
     st.write("This comparison provides context on whether Italy is performing better or worse than the European average in terms of managing new COVID-19 cases and deaths.")
 else:
-    st.pyplot(grafico_deaths_cases_italia(add_europa=add_europa, with_asintoti=with_asintoti))
+    st.pyplot(death_case_ratio(add_europa=add_europa, with_asintoti=with_asintoti))
     st.write("No comparison selected. Displaying the default analysis for new deaths on new cases in Italy.")
     st.write("This baseline analysis focuses on trends within Italy without external comparisons, offering a clear view of the internal situation.")
 # Mostra il grafico con i parametri definiti

@@ -40,14 +40,6 @@ change_hospital_patients = ((hospital_patients - prev_hospital_patients) / prev_
 change_weekly_deaths = ((weekly_deaths - prev_weekly_deaths)/ prev_weekly_deaths) * 100
 change_weekly_new_cases= ((weekly_new_cases - prev_weekly_new_cases)/prev_weekly_new_cases) * 100
 
-#inizio interfaccia grafica
-
-st.title("Real-Time COVID-19")
-st.markdown('<h3 style="color:red;">Current situation compared to the previous week', unsafe_allow_html=True)      
-
-lastdata= most_recent_data['data']
-st.markdown(f"""<div style="text-align: right; color: #a9a9a9">Last update: {lastdata}</div>""",unsafe_allow_html=True)
-st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; margin-top: -5px; width: 100%;" />""", unsafe_allow_html=True )
 
 #----------------------------------------------------------------------
 #defining colors(1) and grafic boxes (2, with css)
@@ -76,6 +68,16 @@ st.markdown("""<style>.metric-box {
 
 
 #-------------------------------------------------------------------
+
+#inizio interfaccia grafica
+
+st.title("Real-Time COVID-19")
+st.markdown('<h3 style="color:red;">Current situation compared to the previous week', unsafe_allow_html=True)      
+
+lastdata= most_recent_data['data']
+st.markdown(f"""<div style="text-align: right; color: #a9a9a9">Last update: {lastdata}</div>""",unsafe_allow_html=True)
+st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; margin-top: -5px; width: 100%;" />""", unsafe_allow_html=True )
+
 #creo due colonne ed inizio a riempirle, 
 #quella a sinistra con i nuovi valori importati, colorati tramite la funzione 
 #sovrastante e inseriti nei box. Quella a destra con mappa importata
@@ -188,11 +190,6 @@ with col2:
         st.write(f"You are subscribed with the name: {st.session_state.subscription['name']} and email: {st.session_state.subscription['email']}")
 
 
-
-
-
-
 st.markdown(  """ <hr style="border:0.6px solid #d3d3d3;margin-top:0px; margin-bottom: 15px; width: 100%;" />""", unsafe_allow_html=True )
-#--------------------------------------------------------------------------------------
 
 
