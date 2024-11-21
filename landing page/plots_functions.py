@@ -126,7 +126,7 @@ def grafico_regioni(colonna):
 The X-axis is customized to show only the starting year for each period.
 '''
 
-def grafico_deaths_cases_italia(add_europa=False, with_asintoti=False):
+def death_case_ratio(add_europa=False, with_asintoti=False):
     #dati per l'Italia
     italy_data = filtered[(filtered['location'] == 'Italy')].copy()
     italy_data['death_case_ratio'] = italy_data['new_deaths'] / italy_data['new_cases'] #create new column
@@ -180,5 +180,5 @@ def grafico_deaths_cases_italia(add_europa=False, with_asintoti=False):
 
 
 #grafico per l'Italia con il confronto Europa senza asintoti
-#grafico_deaths_cases_italia(add_europa=True, with_asintoti=False)
+#death_case_ratio(add_europa=True, with_asintoti=False)
 #plt.show() 

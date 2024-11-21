@@ -4,18 +4,23 @@ import streamlit as st
 import pandas as pd
 from covid_game_algorithm import calcola_probabilita  # Importa la funzione dal file dell'algoritmo
 
-#per i colori non funziona il metodo theming consigliato da streamlit 
-# #uso html
+#per i colori non funziona il metodo theming consigliato da streamlit, #uso html
 st.markdown("""<style>.stApp { background-color: #fff3b1;  } /*colore di sfondo della pagina */</style>""", unsafe_allow_html=True)
 
-
-# Percorso del file CSV con i dati settimanali
 file_path = "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
 df = pd.read_csv(file_path)
 
 df['data'] = pd.to_datetime(df['data']).dt.date #converto in datetime e tengo solo la data
-
 #-------------------------------------------------------------------------------------
+
+#This code implements an interactive Streamlit web app called "COVID GAME," which estimates the probability of a 
+#COVID-19 infection based on user input. The app guides users through a series of questions about their health, symptoms,
+#and exposure to calculate a personalized probability using real-world regional data from a CSV file. To do that:
+#1) I get informations from the user (then calculate a final probability using the algorithm importated)
+#2) I Write a complete analysis about the given result, that depends by the answers given by the user
+
+
+#starting with the point 1
 # Titolo e descrizione del progetto
 st.title("Is it Covid-19?   Let's play!")
 st.markdown("A non-scientific way to estimate the probability of being infected.  \n""This game is composed of 7 simple questions, good luck!")
@@ -72,18 +77,10 @@ if scelta_utente != "I feel good! Thank you":
 else:
     contatto_con_positivi = st.checkbox("**7) I have had contact with someone positive for COVID-19**")
 
-# Bottone per calcolare la probabilità
+
 if st.button("Calculate probability"):
-    # Calcola la probabilità usando l'algoritmo
-    probabilita, dict_moltiplicatori, prob_perc_standardizzata = calcola_probabilita(
-        df=df,
-        regione=regione_scelta,
-        settimana=settimana_scelta,
-        sintomi=sintomi_selezionati,
-        durata_sintomi=durata_sintomi,
-        gravita_sintomi=gravita_sintomi,
-        contatto_con_positivi=contatto_con_positivi
-    )
+    # Calcolo la probabilità richiamando la funzione
+    probabilita, prob_perc_standardizzata = calcola_probabilita(df, regione_scelta, settimana_scelta,sintomi_selezionati, durata_sintomi, gravita_sintomi, contatto_con_positivi)
 
     # Calcolo delle statistiche per la spiegazione
     df_RegSelez =  df[df['denominazione_regione'] == regione_scelta] #df in quella regione
@@ -103,6 +100,7 @@ if st.button("Calculate probability"):
     
 
 #-------------------------------------------------------------------------------------------------------------
+#now the point 2: give to the user a description of the result
 #text part, depending on user interations
     st.subheader("Analysis results:")
 
@@ -111,7 +109,6 @@ if st.button("Calculate probability"):
         st.write("You indicated that you currently have symptoms. Therefore, we will consider the most recent week.")
     
     #messaggio relativo ai sintomi selezionati
-
     indice = 1
 
     if len(sintomi_selezionati) == 0:
@@ -152,7 +149,7 @@ if st.button("Calculate probability"):
     # Messaggio sui tamponi basato sul rapporto di positività
     if rapporto_positivi < media_rapporto_positivi * 0.3:
         st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is very lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period was very low!")
-    if rapporto_positivi < media_rapporto_positivi * 0.8:
+    elif rapporto_positivi < media_rapporto_positivi * 0.8:
         st.markdown(f"💚**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is lower than average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period was low!")
     elif rapporto_positivi <= media_rapporto_positivi * 1.2:
         st.markdown(f"💛**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate  (" + str(round(rapporto_positivi, 1)) + "%) is close to the average positivity rate in that region during the year(" + str(round(media_rapporto_positivi, 1)) + "%): This doesn't tell us much about the chance of getting infected.")

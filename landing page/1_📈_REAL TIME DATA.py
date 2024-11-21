@@ -81,8 +81,6 @@ st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; ma
 #creo due colonne ed inizio a riempirle, 
 #quella a sinistra con i nuovi valori importati, colorati tramite la funzione 
 #sovrastante e inseriti nei box. Quella a destra con mappa importata
-
-
 col1, col2 = st.columns([1.5,1.3]) 
 with col1: 
     st.write('')
@@ -122,7 +120,7 @@ with col2:
     
     fig1 = grafico_regioni('nuovi_positivi')
     fig2 = grafico_regioni('totale_positivi')
-    scegli_grafico_regioni = st.selectbox("", ['Distribution of new cases (log scale)', 'Distribution of currently positive (log scale) '])
+    scegli_grafico_regioni = st.selectbox("titolo nascosto", ['Distribution of new cases (log scale)', 'Distribution of currently positive (log scale) '], label_visibility="hidden")
 
     #grafico in base alla selezione
     df_regioni = pd.read_csv(path_regioni, nrows=20)  

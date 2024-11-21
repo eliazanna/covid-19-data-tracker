@@ -94,14 +94,6 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
     #Calcolo della probabilità finale = prodotto dei moltiplicatori
     probabilita = (sintomi_moltiplicatore * durata_moltiplicatore * gravita_moltiplicatore * contatto_moltiplicatore * casi_moltiplicatore * tamponi_moltiplicatore * 100)
 
-    dict_moltiplicatori = {
-    "sintomi_moltiplicatore": sintomi_moltiplicatore,
-    "durata_moltiplicatore": durata_moltiplicatore,
-    "gravita_moltiplicatore": gravita_moltiplicatore,
-    "contatto_moltiplicatore": contatto_moltiplicatore,
-    "casi_moltiplicatore": casi_moltiplicatore,
-    "tamponi_moltiplicatore": tamponi_moltiplicatore
-    }
 
     #standardizzo per avere la probabilità massima, definita in modo che
     #se tutti i moltiplicatori sono massimi, non ho comunque il 100% di chance che sia covid
@@ -122,6 +114,6 @@ def calcola_probabilita(df, regione, settimana, sintomi, durata_sintomi, gravita
     else:
         probabilita_finale = "Very low"
 
-    return probabilita_finale, dict_moltiplicatori, round(prob_perc_standardizzata, 1)
+    return probabilita_finale, round(prob_perc_standardizzata, 1)
 
 

@@ -8,7 +8,7 @@ st.set_page_config(page_title="COVID SERIES")
 st.header("The effects of Covid-19 in Europe")
 
 #selectbox per scegliere il grafico 1
-option = st.selectbox('',('Total Cases per Million', 'Total Deaths per Million', 'Hospital Patients per Million'))
+option = st.selectbox('titolo nascosto',('Total Cases per Million', 'Total Deaths per Million', 'Hospital Patients per Million'), label_visibility="hidden")
 
 if option == 'Total Cases per Million':
     st.write("This map shows the total cases per million people in Europe, highlighting the spread of the virus across the continent.")
