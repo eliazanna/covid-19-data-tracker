@@ -1,5 +1,4 @@
 #historic covid series
-
 import streamlit as st
 from plots_functions import plot_europe_map
 from plots_functions import death_case_ratio
@@ -7,8 +6,12 @@ from plots_functions import death_case_ratio
 st.set_page_config(page_title="COVID SERIES")
 st.header("The effects of Covid-19 in Europe")
 
+#This Streamlit page is quite simple. The goal is to show some informations about che covid series in the last years, in Europe.
+#We just need to import the plots already created (and well explained) in "plots_functions.py".
+#Then we add a small description depending on the choosen plot
+
 #selectbox per scegliere il grafico 1
-option = st.selectbox('titolo nascosto',('Total Cases per Million', 'Total Deaths per Million', 'Hospital Patients per Million'), label_visibility="hidden")
+option = st.selectbox('titolo nascosto',['Total Cases per Million', 'Total Deaths per Million', 'Hospital Patients per Million'], label_visibility="hidden")
 
 if option == 'Total Cases per Million':
     st.write("This map shows the total cases per million people in Europe, highlighting the spread of the virus across the continent.")
@@ -26,6 +29,7 @@ else:
     st.pyplot(fig5)
 
 st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 15px; width: 100%;" />""", unsafe_allow_html=True )
+
 #-------------------------------------------------------------------------------------
 
 st.header("Trend of COVID-19 Mortality Rate in Italy")
@@ -34,7 +38,7 @@ st.write('')
 with_asintoti = st.checkbox("Compare with vaccinated population")
 add_europa = st.checkbox("Compare with European average")
 
-# Mostra il risultato basato sulle selezioni
+#Linea di testo basato sulle selezioni
 if add_europa and with_asintoti:
     st.pyplot(death_case_ratio(add_europa=add_europa, with_asintoti=with_asintoti))
     st.write("Comparing with both the European average and the vaccinated population provides a comprehensive view of Italy's performance.")
@@ -51,5 +55,5 @@ else:
     st.pyplot(death_case_ratio(add_europa=add_europa, with_asintoti=with_asintoti))
     st.write("No comparison selected. Displaying the default analysis for new deaths on new cases in Italy.")
     st.write("This baseline analysis focuses on trends within Italy without external comparisons, offering a clear view of the internal situation.")
-# Mostra il grafico con i parametri definiti
+
 

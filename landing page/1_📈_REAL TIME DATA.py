@@ -2,10 +2,9 @@ import streamlit as st
 import pandas as pd
 from plots_functions import grafico_regioni
 
+st.sidebar.success("Select a demo above.") #streamlit
 
-st.sidebar.success("Select a demo above.")
-
-#CSS per modificare il background della pagina
+#html pagina sfondo
 st.markdown("""<style>.stApp { background-color: #f0f8ff;  } /*colore di sfondo della pagina */</style>""", unsafe_allow_html=True)
 
 #file CSV con i dati settimanali
@@ -13,6 +12,7 @@ path_italia= "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/we
 path_regioni= "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
 
 df_italia = pd.read_csv(path_italia, nrows=3)
+
 #prendo i dati più recenti (prima riga) e quelli della settimana precedente (seconda riga)
 most_recent_data = df_italia.iloc[0]
 previous_week_data = df_italia.iloc[1]
@@ -34,38 +34,36 @@ prev_weekly_deaths = previous_week_data["morti totali"] - two_weeks_old_data["mo
 prev_weekly_new_cases= previous_week_data['casi totali'] - two_weeks_old_data['casi totali']
 
 # Calcolo delle variazioni percentuali per totali positivi, terapie intensive e ospedalizzati
-change_now_positive = ((now_positive - prev_now_positive) / prev_now_positive) * 100
-change_intensive_care = ((intensive_care - prev_intensive_care) / prev_intensive_care) * 100
-change_hospital_patients = ((hospital_patients - prev_hospital_patients) / prev_hospital_patients) * 100
-change_weekly_deaths = ((weekly_deaths - prev_weekly_deaths)/ prev_weekly_deaths) * 100
-change_weekly_new_cases= ((weekly_new_cases - prev_weekly_new_cases)/prev_weekly_new_cases) * 100
-
+delta_now_positive = ((now_positive - prev_now_positive) / prev_now_positive) * 100
+delta_intensive_care = ((intensive_care - prev_intensive_care) / prev_intensive_care) * 100
+delta_hospital_patients = ((hospital_patients - prev_hospital_patients) / prev_hospital_patients) * 100
+delta_weekly_deaths = ((weekly_deaths - prev_weekly_deaths)/ prev_weekly_deaths) * 100
+delta_weekly_new_cases= ((weekly_new_cases - prev_weekly_new_cases)/prev_weekly_new_cases) * 100
 
 #----------------------------------------------------------------------
 #defining colors(1) and grafic boxes (2, with css)
 
 #(1) freccia e valore percenutali colorati in base a delta
 def format_delta(delta, value=None):
-    arrow = "↑" if delta > 0 else "↓"
-    color = "red" if delta > 0 else "green"
-
-    if value is not None:
-        return '<span style="color: ' + color + ';">' + str(value) + '</span>'
+    if delta > 0:
+        arrow = "↑"
+        color = "red"
     else:
-        return '<span style="color: ' + color + ';">' + arrow + ' ' + str(round(abs(delta), 1)) + '%</span>'
+        arrow="↓"
+        color ="green"
+
+    if value is None:   #se non cè la variabile "value", restituisco il delta colorato
+        return '<span style="color:' +color+ ';">' + arrow + ' ' + str(round(abs(delta), 1)) + '%</span>'
+    else: #se cè la variabile value, restituisco solo quella colorata (in base al valore assunto da delta)
+        return '<span style="color:' +color+ ';">' + str(value) + '</span>'
+
 
 #2 creating boxes
-st.markdown("""<style>.metric-box {
-        border: 1px solid #d3d3d3; 
-        padding: 2px;
-        margin-bottom: 6px; border-radius: 10px;  /* Arrotonda i bordi */text-align: center;
-    }
+st.markdown("""<style>.metric-box {border: 1px solid #d3d3d3; padding: 2px; 
+            margin-bottom: 6px; border-radius: 10px;  /* Arrotonda i bordi */text-align: center;}
     .metric-label {font-size: 16px; color: #000000;}
     .metric-value {font-size: 26px;}
-    .metric-delta {font-size: 14px;}</style>""",
-    unsafe_allow_html=True
-)
-
+    .metric-delta {font-size: 14px;}</style>""", unsafe_allow_html=True)
 
 #-------------------------------------------------------------------
 
@@ -75,8 +73,8 @@ st.title("Real-Time COVID-19")
 st.markdown('<h3 style="color:red;">Current situation compared to the previous week', unsafe_allow_html=True)      
 
 lastdata= most_recent_data['data']
-st.markdown(f"""<div style="text-align: right; color: #a9a9a9">Last update: {lastdata}</div>""",unsafe_allow_html=True)
-st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; margin-top: -5px; width: 100%;" />""", unsafe_allow_html=True )
+st.markdown(f"""<div style="text-align: right; color: #a9a9a9">Last update: {lastdata}</div>""",unsafe_allow_html=True) #data last update
+st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; margin-top: -5px; width: 100%;" />""", unsafe_allow_html=True ) #riga
 
 #creo due colonne ed inizio a riempirle, 
 #quella a sinistra con i nuovi valori importati, colorati tramite la funzione 
@@ -89,29 +87,24 @@ with col1:
 
     <div class="metric-box">
         <div class="metric-label">New Positives</div>
-        <div class="metric-value">{format_delta(change_weekly_new_cases, value=int(weekly_new_cases))}</div>
-        <div class="metric-delta">{format_delta(change_weekly_new_cases)}</div>
-    </div>       
+        <div class="metric-value">{format_delta(delta_weekly_new_cases, value=int(weekly_new_cases))}</div>
+        <div class="metric-delta">{format_delta(delta_weekly_new_cases)}</div></div>       
     <div class="metric-box">
         <div class="metric-label">Currently Positives</div>
-        <div class="metric-value">{format_delta(change_now_positive, value=int(now_positive))}</div>
-        <div class="metric-delta">{format_delta(change_now_positive)}</div>
-    </div> 
+        <div class="metric-value">{format_delta(delta_now_positive, value=int(now_positive))}</div>
+        <div class="metric-delta">{format_delta(delta_now_positive)}</div></div> 
     <div class="metric-box">
         <div class="metric-label">Currently in Intensive Care</div>
-        <div class="metric-value">{format_delta(change_intensive_care, value=int(intensive_care))}</div>
-        <div class="metric-delta">{format_delta(change_intensive_care)}</div>
-    </div>
+        <div class="metric-value">{format_delta(delta_intensive_care, value=int(intensive_care))}</div>
+        <div class="metric-delta">{format_delta(delta_intensive_care)}</div></div>
     <div class="metric-box">
         <div class="metric-label">Currently in Hospital</div>
-        <div class="metric-value">{format_delta(change_hospital_patients, value=int(hospital_patients))}</div>
-        <div class="metric-delta">{format_delta(change_hospital_patients)}</div>
-    </div>
+        <div class="metric-value">{format_delta(delta_hospital_patients, value=int(hospital_patients))}</div>
+        <div class="metric-delta">{format_delta(delta_hospital_patients)}</div></div>
     <div class="metric-box">
         <div class="metric-label">This week Deaths</div>
-        <div class="metric-value">{format_delta(change_weekly_deaths, value=int(weekly_deaths))}</div>
-        <div class="metric-delta">{format_delta(change_weekly_deaths)}</div>
-    </div>
+        <div class="metric-value">{format_delta(delta_weekly_deaths, value=int(weekly_deaths))}</div>
+        <div class="metric-delta">{format_delta(delta_weekly_deaths)}</div></div>
 """, unsafe_allow_html=True)
 
 
@@ -166,6 +159,7 @@ with col2:
         email = st.text_input("Email Address:")
         if st.button("Subscribe"):
             if name and email:
+                #aggiorno stato della sessione
                 st.session_state.subscription = {"name": name, "email": email}
 
                 #metto nel csv
@@ -177,15 +171,15 @@ with col2:
                 print("dati aggiunti")
 
                 st.success(f"Thank you, {name}, for subscribing!")
-            
             else:
                 st.error("Please enter both your name and email.")
 
-    if "subscription" not in st.session_state:
+    if "subscription" in st.session_state:
+        st.write(f"You are subscribed with the name: {st.session_state.subscription['name']} and email: {st.session_state.subscription['email']}")
+    else:
+        # Altrimenti, mostra il bottone per iscriversi
         if st.button("Subscribe", key="open_subscribe_dialog"):
             subscribe()
-    else:
-        st.write(f"You are subscribed with the name: {st.session_state.subscription['name']} and email: {st.session_state.subscription['email']}")
 
 
 st.markdown(  """ <hr style="border:0.6px solid #d3d3d3;margin-top:0px; margin-bottom: 15px; width: 100%;" />""", unsafe_allow_html=True )

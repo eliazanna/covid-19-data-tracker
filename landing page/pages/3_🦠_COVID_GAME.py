@@ -8,7 +8,7 @@ from covid_game_algorithm import calcola_probabilita  # Importa la funzione dal 
 st.markdown("""<style>.stApp { background-color: #fff3b1;  } /*colore di sfondo della pagina */</style>""", unsafe_allow_html=True)
 
 file_path = "C:/Users/eliza/Documents/GitHub/covid-19-data-tracker/csv usati/weeklyupdate_regions.csv"
-df = pd.read_csv(file_path)
+df = pd.read_csv(file_path) #dataframe con dati su regioni
 
 df['data'] = pd.to_datetime(df['data']).dt.date #converto in datetime e tengo solo la data
 #-------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ else:
 if scelta_utente != "I feel good! Thank you":
     gravita_sintomi = st.selectbox("**5) Select the severity of symptoms:**", ["Low", "Medium", "High"], index=None)
 else:
-    gravita_sintomi = st.selectbox("**6) Select the severity of symptoms:**", ["Low", "Medium", "High"],  )
+    gravita_sintomi = st.selectbox("**6) Select the severity of symptoms:**", ["Low", "Medium", "High"], index=None )
 
 #6: Contatti con positivi
 if scelta_utente != "I feel good! Thank you":
@@ -77,9 +77,8 @@ if scelta_utente != "I feel good! Thank you":
 else:
     contatto_con_positivi = st.checkbox("**7) I have had contact with someone positive for COVID-19**")
 
-
+# Calcolo la probabilità richiamando la funzione, quando viene premuto bottone
 if st.button("Calculate probability"):
-    # Calcolo la probabilità richiamando la funzione
     probabilita, prob_perc_standardizzata = calcola_probabilita(df, regione_scelta, settimana_scelta,sintomi_selezionati, durata_sintomi, gravita_sintomi, contatto_con_positivi)
 
     # Calcolo delle statistiche per la spiegazione
@@ -96,10 +95,9 @@ if st.button("Calculate probability"):
     media_rapporto_positivi = (df_RegSelez['tamponi_positivi_settimanali'] /df_RegSelez['tamponi_settimanali']).mean() * 100
     rapporto_positivi = (tamponi_positivi_settimanali / tamponi_settimanali) * 100
 
-    st.markdown("""<hr style="border:0.1px solid gray; margin-top: 30px;">""", unsafe_allow_html=True) #linea
-    
 
-#-------------------------------------------------------------------------------------------------------------
+    st.markdown("""<hr style="border:0.1px solid gray; margin-top: 30px;">""", unsafe_allow_html=True) #linea
+#------------------------------------------------------------------------------------------------------------
 #now the point 2: give to the user a description of the result
 #text part, depending on user interations
     st.subheader("Analysis results:")
@@ -139,6 +137,7 @@ if st.button("Calculate probability"):
     else:
         st.write(f"💚**{indice}**: You didn't have any known contact with positive cases, reducing the risk.")
     indice +=1
+
     # Messaggio relativo alla differenza percentuale dei nuovi casi rispetto alla media
     if percentuale_diff > 0:
         st.write(f"💔**{indice}**: That week, new cases in " + regione_scelta + " were " + str(round(percentuale_diff, 1)) + "% higher than the average cases throughout the year in that region.")
@@ -158,8 +157,9 @@ if st.button("Calculate probability"):
     else:
         st.markdown(f"💔**{indice}**: On  " + str(int(tamponi_settimanali)) +" tests done in " + regione_scelta +" in that week, the positivity rate (" + str(round(rapporto_positivi, 1)) + "%) is a lot higher than the average positivity rate in that region during the year (" + str(round(media_rapporto_positivi, 1)) + "%): The chance of getting infected in that period was very high!")
 
-    st.markdown("""<hr style="border:0.1px solid gray; margin-top: 10px;">""", unsafe_allow_html=True) #linea
 
+
+    st.markdown("""<hr style="border:0.1px solid gray; margin-top: 10px;">""", unsafe_allow_html=True) #linea
     #risultato della probabilità finale
     col1, col2 = st.columns(2)
 

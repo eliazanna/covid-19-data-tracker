@@ -1,0 +1,16 @@
+**PACKAGES TO HAVE**
+
+1) pandas: For data manipulation and analysis.
+2) streamlit: For creating interactive web apps in Python.
+3) numpy: For numerical computing and mathematical operations.
+4) matplotlib: For creating static, interactive, and animated visualizations.
+5) geopandas: For working with geospatial data and maps.
+6) selenium: For automating web browser interactions.
+7) pyperclip: For copying and pasting clipboard content.
+8) os: For interacting with the operating system (built-in library, no installation needed).
+9) time: For handling time-related operations (built-in library, no installation needed).
+
+*extra*: chromedriver.exe:
+ChromeDriver is required by Selenium to interact with the Google Chrome browser.
+Make sure to download the correct version of ChromeDriver that matches your installed Chrome browser version.
+Note: Place the chromedriver.exe file in a folder within your project directory or specify its path in your code.

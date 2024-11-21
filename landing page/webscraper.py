@@ -6,8 +6,6 @@ from time import sleep
 import pyperclip
 import pandas as pd
 
-from selenium import webdriver
-
 # Configurazione delle opzioni di Chrome
 options = webdriver.ChromeOptions() ;
 prefs = {"download.default_directory" : r"C:\Users\eliza\Documents\GitHub\covid-19-data-tracker\csv usati\\"}; #perso le ore perche sensa rstring il path non veniva rispettato
