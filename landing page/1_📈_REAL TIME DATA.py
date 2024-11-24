@@ -48,6 +48,9 @@ def format_delta(delta, value=None):
     if delta > 0:
         arrow = "↑"
         color = "red"
+    elif delta == 0:
+        arrow = "="
+        color = "#FF8C00"
     else:
         arrow="↓"
         color ="green"
@@ -59,9 +62,9 @@ def format_delta(delta, value=None):
 
 
 #2 creating boxes
-st.markdown("""<style>.metric-box {border: 1px solid #d3d3d3; padding: 2px; 
+st.markdown("""<style>.metric-box {border: 1px solid #d3d3d3; padding: 4px; 
             margin-bottom: 6px; border-radius: 10px;  /* Arrotonda i bordi */text-align: center;}
-    .metric-label {font-size: 16px; color: #000000;}
+    .metric-label {font-size: 17px; color: #000000;}
     .metric-value {font-size: 26px;}
     .metric-delta {font-size: 14px;}</style>""", unsafe_allow_html=True)
 
@@ -72,6 +75,7 @@ st.markdown("""<style>.metric-box {border: 1px solid #d3d3d3; padding: 2px;
 st.title("Real-Time COVID-19")
 st.markdown('<h3 style="color:red;">Current situation compared to the previous week', unsafe_allow_html=True)      
 
+#adding last date update, on a line
 lastdata= most_recent_data['data']
 st.markdown(f"""<div style="text-align: right; color: #a9a9a9">Last update: {lastdata}</div>""",unsafe_allow_html=True) #data last update
 st.markdown(  """ <hr style="border:0.6px solid #d3d3d3; margin-bottom: 30px; margin-top: -5px; width: 100%;" />""", unsafe_allow_html=True ) #riga
