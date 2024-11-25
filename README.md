@@ -26,8 +26,8 @@ The principal page, in where:
     a) I created the ["webscraper"](<landing page/webscraper.py>), a Python file that allows me to automatize the importation of the latest Covid-19 information.  
     The data are updated weekly by the "Italy Civil Protection Department", on this link: [COVID-19 Repository](https://github.com/pcm-dpc/COVID-19).  
     After this operation, it will have automatically updated these csv:
-   - [weeklyupdate_italy.csv (1)](<csv usati/weeklyupdate_regions.csv>): With all the datas (including new ones) about the country
-   - [weeklyupdate_regions.csv (2)](<csv usati/weeklyupdate_italy.csv>): With all the datas (including new ones) about the regions
+   - [weeklyupdate_italy.csv (1)](<csv usati/weeklyupdate_regions.csv>): With all the data (including new ones) about the country
+   - [weeklyupdate_regions.csv (2)](<csv usati/weeklyupdate_italy.csv>): With all the data (including new ones) about the regions
 
     b) I manage the first (1), cleaning it and filtering the data I need to show.
 
